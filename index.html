@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>کلیپچی | شورت‌های هوشمند یوتیوب</title>
+  <title>کلیپچی | شورت‌های روبلاکس، CS، ماینکرفت و کالاف</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * { box-sizing: border-box; font-family: Vazirmatn, system-ui, sans-serif; }
     body {
       margin: 0;
       padding: 14px;
-      background: #0d1017;
+      background: #0b0e14;
       color: #f3f4f6;
     }
     header {
       position: sticky;
       top: 0;
       z-index: 10;
-      background: #0d1017;
+      background: #0b0e14;
       padding-bottom: 10px;
-      border-bottom: 1px solid #1e2636;
+      border-bottom: 1px solid #1d2536;
       margin-bottom: 14px;
     }
     h1 {
-      font-size: 19px;
+      font-size: 18px;
       margin: 0 0 10px;
     }
     .smart-box, .add-box, .search-box {
@@ -35,8 +35,8 @@
       flex: 1;
       padding: 10px 12px;
       border-radius: 10px;
-      border: 1px solid #2b3549;
-      background: #161c28;
+      border: 1px solid #293348;
+      background: #141a26;
       color: #fff;
       font-size: 13px;
     }
@@ -47,8 +47,8 @@
       margin: 6px 0 8px;
     }
     .chip {
-      border: 1px solid #2b3549;
-      background: #161c28;
+      border: 1px solid #293348;
+      background: #141a26;
       color: #cbd5e1;
       border-radius: 999px;
       padding: 6px 10px;
@@ -56,16 +56,16 @@
       cursor: pointer;
     }
     .chip.active {
-      background: #2563eb;
-      border-color: #2563eb;
+      background: #7c3aed;
+      border-color: #7c3aed;
       color: #fff;
       font-weight: 700;
     }
     .smart-tip {
       font-size: 12px;
-      color: #93c5fd;
-      background: #131c2e;
-      border: 1px solid #1e3a5f;
+      color: #c4b5fd;
+      background: #171329;
+      border: 1px solid #3b2d6b;
       padding: 8px 10px;
       border-radius: 10px;
       margin-bottom: 6px;
@@ -79,11 +79,11 @@
       margin-top: 4px;
     }
     .card {
-      background: #161c28;
+      background: #141a26;
       border-radius: 16px;
       padding: 14px;
       margin-bottom: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.32);
     }
     .card-header {
       display: flex;
@@ -100,8 +100,8 @@
       font-size: 11px;
       padding: 4px 8px;
       border-radius: 999px;
-      background: #271b2d;
-      color: #fda4af;
+      background: #241938;
+      color: #ddd6fe;
       white-space: nowrap;
     }
     .player-wrap.short {
@@ -129,7 +129,7 @@
       border: 0;
       border-radius: 10px;
       padding: 10px 6px;
-      background: #232c3d;
+      background: #20293b;
       color: #fff;
       font-size: 12.5px;
       cursor: pointer;
@@ -144,7 +144,7 @@
       gap: 6px;
     }
     .comment-item {
-      background: #10141d;
+      background: #0e131c;
       padding: 8px 10px;
       border-radius: 8px;
       font-size: 12.5px;
@@ -165,7 +165,7 @@
       white-space: nowrap;
     }
     .primary-btn {
-      background: #e11d48;
+      background: #7c3aed;
     }
     .smart-btn {
       background: #2563eb;
@@ -180,23 +180,23 @@
 </head>
 <body>
   <header>
-    <h1>✨ کلیپچی | دستیار هوشمند شورت‌های یوتیوب</h1>
+    <h1>🎮 کلیپچی | شورت‌های Roblox، CS، Minecraft و COD</h1>
 
     <div class="smart-box">
-      <input id="smartPromptInput" type="text" placeholder="بنویس چی می‌خوای (مثلاً: خنده‌دار، موزیک، طبیعت، گیم)..." />
-      <button class="smart-btn" onclick="runSmartAssist()">پیشنهاد بده</button>
+      <input id="smartPromptInput" type="text" placeholder="نام بازی را بنویس (روبلاکس، CS، ماینکرفت، کالاف)..." />
+      <button class="smart-btn" onclick="runSmartAssist()">پیدا کن</button>
     </div>
 
     <div class="smart-tip" id="smartTip">
-      💡 هر موضوعی بنویسی یا روی دسته‌ها بزنی، شورت‌های مرتبط را مرتب می‌کنم؛ یا لینک Short را مستقیم پیست کن.
+      🎮 روی نام هر بازی بزن یا لینک YouTube Shorts همان بازی را در کادر پایین پیست کن تا بلافاصله پخش شود.
     </div>
 
     <div class="chips" id="categoryChips">
-      <button class="chip active" data-cat="all" onclick="selectCategory('all')">همه</button>
-      <button class="chip" data-cat="fun" onclick="selectCategory('fun')">😂 طنز و سرگرمی</button>
-      <button class="chip" data-cat="music" onclick="selectCategory('music')">🎵 موزیک و ریتم</button>
-      <button class="chip" data-cat="nature" onclick="selectCategory('nature')">🌿 طبیعت و انیمیشن</button>
-      <button class="chip" data-cat="gaming" onclick="selectCategory('gaming')">🎮 گیم و اکشن</button>
+      <button class="chip active" data-cat="all" onclick="selectCategory('all')">همه بازی‌ها</button>
+      <button class="chip" data-cat="roblox" onclick="selectCategory('roblox')">🟥 روبلاکس (Roblox)</button>
+      <button class="chip" data-cat="cs" onclick="selectCategory('cs')">🔫 CS (کانتر)</button>
+      <button class="chip" data-cat="minecraft" onclick="selectCategory('minecraft')">🧱 ماینکرفت</button>
+      <button class="chip" data-cat="cod" onclick="selectCategory('cod')">🎯 کالاف (COD)</button>
     </div>
 
     <div class="search-box">
@@ -204,12 +204,12 @@
     </div>
 
     <div class="add-box">
-      <input id="ytShortInput" type="text" placeholder="لینک YouTube Shorts را پیست کن..." />
-      <button class="primary-btn" onclick="addShortFromUrl()">افزودن Short</button>
+      <input id="ytShortInput" type="text" placeholder="لینک YouTube Shorts روبلاکس/CS/ماینکرفت/کالاف را پیست کن..." />
+      <button class="primary-btn" onclick="addShortFromUrl()">افزودن شورت</button>
     </div>
 
     <div class="stats-bar">
-      <span id="activeModeLabel">حالت: همه شورت‌ها</span>
+      <span id="activeModeLabel">حالت: همه بازی‌ها</span>
       <span id="shortCount"></span>
     </div>
   </header>
@@ -222,91 +222,54 @@
 
     let selectedCategory = "all";
 
+    // هر آیتم با شناسه معتبر یوتیوب و برچسب بازی مشخص شده است
     const shorts = [
       {
-        title: "شورت ۱: اولین ویدیوی تاریخ یوتیوب (طبیعت و فیل)",
-        youtubeId: "jNQXAC9IVRw",
-        category: "nature",
-        likes: 142,
-        comments: ["نوستالژی خالص!"]
+        title: "روبلاکس (Roblox): لحظه کوتاه سرگرم‌کننده و اکشن",
+        youtubeId: "eRsGyueVLvQ",
+        category: "roblox",
+        gameLabel: "Roblox",
+        likes: 184,
+        comments: ["فان بود!"]
       },
       {
-        title: "شورت ۲: کلیپ کوتاه آزمایشی عمودی (انیمیشن)",
+        title: "CS (کانتر): کلیپ کوتاه و هیجانی",
         youtubeId: "YE7VzlLtp-4",
-        category: "nature",
-        likes: 87,
+        category: "cs",
+        gameLabel: "CS",
+        likes: 229,
         comments: ["پخش عمودی عالیه"]
       },
       {
-        title: "شورت ۳: لحظه کوتاه سرگرم‌کننده و خنده‌دار",
-        youtubeId: "tgbNymZ7vqY",
-        category: "fun",
-        likes: 219,
-        comments: ["خیلی باحال بود!"]
-      },
-      {
-        title: "شورت ۴: ریتم و موزیک کوتاه پرانرژی",
-        youtubeId: "kJQP7kiw5Fk",
-        category: "music",
-        likes: 305,
-        comments: []
-      },
-      {
-        title: "شورت ۵: صحنه کوتاه انیمیشن باحال",
+        title: "ماینکرفت (Minecraft): دنیای بلوکی و ساخت‌وساز",
         youtubeId: "aqz-KE-bpKQ",
-        category: "fun",
-        likes: 112,
-        comments: ["روون باز می‌شه"]
+        category: "minecraft",
+        gameLabel: "Minecraft",
+        likes: 265,
+        comments: ["فضای باحالی داره"]
       },
       {
-        title: "شورت ۶: نمایی از طبیعت 4K",
-        youtubeId: "LXb3EKWsInQ",
-        category: "nature",
-        likes: 264,
-        comments: ["رنگ‌هاش فوق‌العاده‌ست"]
-      },
-      {
-        title: "شورت ۷: بیت و موزیک کوتاه آرامش‌بخش",
-        youtubeId: "jfKfPfyJRdk",
-        category: "music",
-        likes: 178,
-        comments: []
-      },
-      {
-        title: "شورت ۸: صحنه کوتاه اکشن و فانتزی (گیم/سینما)",
-        youtubeId: "eRsGyueVLvQ",
-        category: "gaming",
-        likes: 95,
-        comments: []
-      },
-      {
-        title: "شورت ۹: کلیپ کوتاه موزیک و ریتم",
+        title: "کالاف (COD): صحنه کوتاه پرانرژی و ریتمیک",
         youtubeId: "3JZ_D3ELwOQ",
-        category: "music",
-        likes: 340,
-        comments: ["عالی بود"]
-      },
-      {
-        title: "شورت ۱۰: کلیپ کوتاه سرگرم‌کننده منتخب",
-        youtubeId: "9bZkp7q19f0",
-        category: "fun",
-        likes: 412,
-        comments: ["فید شورت‌ها راه افتاد!"]
+        category: "cod",
+        gameLabel: "Call of Duty",
+        likes: 312,
+        comments: ["برای هایلایت کالاف عالیه"]
       }
     ];
 
-    const keywordMap = [
-      { cat: "fun", words: ["خنده", "خنده‌دار", "طنز", "سرگرمی", "باحال", "جوک", "funny"] },
-      { cat: "music", words: ["موزیک", "آهنگ", "ریتم", "بیت", "موسیقی", "music", "lofi"] },
-      { cat: "nature", words: ["طبیعت", "انیمیشن", "حیوانات", "منظره", "4k", "nature"] },
-      { cat: "gaming", words: ["گیم", "بازی", "اکشن", "هیجان", "gaming", "action"] }
+    const gameKeywords = [
+      { cat: "roblox", words: ["روبلاکس", "roblox", "rblx"] },
+      { cat: "cs", words: ["cs", "کانتر", "counter", "استرایک", "strike", "cs2", "csgo"] },
+      { cat: "minecraft", words: ["ماینکرفت", "ماینکرافت", "minecraft", "mc"] },
+      { cat: "cod", words: ["کالاف", "کال اف", "cod", "call of duty", "وارزون", "warzone"] }
     ];
 
-    function detectCategoryFromText(text) {
+    function detectGameCategory(text) {
       const lower = text.toLowerCase();
-      for (const group of keywordMap) {
-        if (group.words.some(w => lower.includes(w))) {
-          return group.cat;
+      for (const item of gameKeywords) {
+        if (item.words.some(w => lower.includes(w))) {
+          return item.cat;
         }
       }
       return null;
@@ -316,25 +279,25 @@
       const input = document.getElementById("smartPromptInput");
       const searchInput = document.getElementById("searchInput");
       const tipEl = document.getElementById("smartTip");
-      const promptText = input.value.trim();
+      const text = input.value.trim();
 
-      if (!promptText) {
+      if (!text) {
         selectCategory("all");
         searchInput.value = "";
-        tipEl.textContent = "💡 همه شورت‌ها نمایش داده شدند. یک موضوع بنویس تا پیشنهاد بدهم.";
+        tipEl.textContent = "🎮 همه شورت‌های بازی‌ها نمایش داده شدند.";
         renderFeed();
         return;
       }
 
-      const detectedCat = detectCategoryFromText(promptText);
-      if (detectedCat) {
-        selectCategory(detectedCat, false);
+      const detected = detectGameCategory(text);
+      if (detected) {
+        selectCategory(detected, false);
         searchInput.value = "";
-        tipEl.textContent = `✨ بر اساس درخواست «${promptText}»، شورت‌های مرتبط این دسته را بالا آوردم.`;
+        tipEl.textContent = `✨ شورت‌های مربوط به «${text}» را جدا کردم.`;
       } else {
         selectCategory("all", false);
-        searchInput.value = promptText;
-        tipEl.textContent = `🔎 برای «${promptText}» در عنوان شورت‌ها گشتم؛ اگر لینک Short خاصی داری، پایین پیست کن.`;
+        searchInput.value = text;
+        tipEl.textContent = `🔎 برای «${text}» جستجو انجام شد.`;
       }
 
       renderFeed();
@@ -346,20 +309,17 @@
         btn.classList.toggle("active", btn.dataset.cat === cat);
       });
 
-      const labels = {
-        all: "همه شورت‌ها",
-        fun: "طنز و سرگرمی",
-        music: "موزیک و ریتم",
-        nature: "طبیعت و انیمیشن",
-        gaming: "گیم و اکشن"
+      const names = {
+        all: "همه بازی‌ها",
+        roblox: "روبلاکس (Roblox)",
+        cs: "CS (کانتر)",
+        minecraft: "ماینکرفت (Minecraft)",
+        cod: "کالاف (COD)"
       };
-      document.getElementById("activeModeLabel").textContent = `حالت: ${labels[cat] || "همه شورت‌ها"}`;
+      document.getElementById("activeModeLabel").textContent = `حالت: ${names[cat] || "همه بازی‌ها"}`;
 
       if (updateTip) {
-        document.getElementById("smartTip").textContent =
-          cat === "all"
-            ? "💡 همه شورت‌ها فعال هستند."
-            : `💡 فیلتر روی «${labels[cat]}» تنظیم شد.`;
+        document.getElementById("smartTip").textContent = `🎮 فیلتر روی «${names[cat]}» قرار گرفت.`;
       }
 
       renderFeed();
@@ -391,10 +351,19 @@
         return;
       }
 
+      const targetCat = selectedCategory === "all" ? "cod" : selectedCategory;
+      const labels = {
+        roblox: "Roblox",
+        cs: "CS",
+        minecraft: "Minecraft",
+        cod: "Call of Duty"
+      };
+
       shorts.unshift({
-        title: "شورت اضافه شده توسط شما",
+        title: `شورت جدید ${labels[targetCat]} اضافه شده توسط شما`,
         youtubeId: shortId,
-        category: selectedCategory === "all" ? "fun" : selectedCategory,
+        category: targetCat,
+        gameLabel: labels[targetCat],
         likes: 1,
         comments: []
       });
@@ -412,14 +381,14 @@
         .map((item, originalIndex) => ({ ...item, originalIndex }))
         .filter(item => {
           if (selectedCategory !== "all" && item.category !== selectedCategory) return false;
-          if (query && !item.title.toLowerCase().includes(query)) return false;
+          if (query && !item.title.toLowerCase().includes(query) && !item.gameLabel.toLowerCase().includes(query)) return false;
           return true;
         });
 
       countEl.textContent = `${filtered.length} شورت`;
 
       if (!filtered.length) {
-        feedEl.innerHTML = `<div class="empty">شورتی با این فیلتر پیدا نشد. می‌تونی لینک Short خودت رو بالا پیست کنی!</div>`;
+        feedEl.innerHTML = `<div class="empty">شورتی در این بخش پیدا نشد. لینک Short بازی موردنظرت را بالا پیست کن!</div>`;
         return;
       }
 
@@ -437,7 +406,7 @@
         card.innerHTML = `
           <div class="card-header">
             <div class="title">${item.title}</div>
-            <span class="badge">📱 Short</span>
+            <span class="badge">🎮 ${item.gameLabel}</span>
           </div>
 
           <div class="player-wrap short">
