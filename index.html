@@ -3,185 +3,415 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>مینی‌اپ کلیپ و ویدیو</title>
+  <title>کلیپچی | Clipchi</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
+    * { box-sizing: border-box; font-family: Vazirmatn, system-ui, sans-serif; }
     body {
       margin: 0;
-      font-family: sans-serif;
-      background: #0f1115;
+      padding: 14px;
+      background: #0f1218;
+      color: #f3f4f6;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #0f1218;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #1f2633;
+      margin-bottom: 14px;
+    }
+    h1 {
+      font-size: 19px;
+      margin: 0 0 10px;
+    }
+    .add-box, .search-box {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    input {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #2b3446;
+      background: #171c26;
       color: #fff;
-      padding: 16px;
+      font-size: 13px;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px;
+      border-radius: 10px;
+      border: 0;
+      background: #1c2230;
+      color: #cbd5e1;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: #2563eb;
+      color: #fff;
+      font-weight: 700;
     }
     .card {
-      background: #1a1d24;
+      background: #171c26;
       border-radius: 16px;
       padding: 14px;
-      margin-bottom: 18px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
     }
     .title {
-      font-size: 16px;
-      font-weight: bold;
-      margin-bottom: 10px;
+      font-size: 15px;
+      font-weight: 700;
     }
-    video, iframe {
+    .badge {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #283246;
+      color: #93c5fd;
+      white-space: nowrap;
+    }
+    .player-wrap {
+      position: relative;
       width: 100%;
-      height: 220px;
-      border-radius: 12px;
-      border: none;
+      aspect-ratio: 16 / 9;
       background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .player-wrap.short {
+      max-width: 330px;
+      margin: 0 auto;
+      aspect-ratio: 9 / 16;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
     }
     .actions {
-      display: flex;
-      gap: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
       margin-top: 12px;
     }
-    button {
-      flex: 1;
-      padding: 10px;
-      border: none;
+    button.action-btn {
+      border: 0;
       border-radius: 10px;
-      font-size: 14px;
-      cursor: pointer;
-      background: #282d38;
+      padding: 10px 6px;
+      background: #242c3d;
       color: #fff;
+      font-size: 12.5px;
+      cursor: pointer;
     }
-    button.liked {
+    button.like-btn.liked {
       background: #e11d48;
     }
     .comments-box {
-      margin-top: 12px;
-      border-top: 1px solid #2b303c;
-      padding-top: 10px;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
     .comment-item {
-      font-size: 13px;
-      background: #12151b;
+      background: #11151d;
       padding: 8px 10px;
       border-radius: 8px;
-      margin-bottom: 6px;
+      font-size: 12.5px;
     }
     .comment-form {
       display: flex;
       gap: 8px;
       margin-top: 8px;
     }
-    input {
-      flex: 1;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #343a48;
-      background: #12151b;
-      color: #fff;
-    }
-    .send-btn {
-      flex: 0 0 auto;
+    .primary-btn {
+      border: 0;
+      border-radius: 10px;
       background: #2563eb;
-      padding: 8px 14px;
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .empty {
+      text-align: center;
+      color: #94a3b8;
+      padding: 28px 10px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <h2>🎬 مینی‌اپ ویدیو و کلیپ</h2>
+  <header>
+    <h1>🎬 کلیپچی | شورت‌ها و ویدیوهای یوتیوب</h1>
+
+    <div class="search-box">
+      <input id="searchInput" type="text" placeholder="جستجو در عنوان ویدیوها..." oninput="renderFeed()" />
+    </div>
+
+    <div class="add-box">
+      <input id="ytUrlInput" type="text" placeholder="لینک یوتیوب یا Shorts را پیست کن..." />
+      <button class="primary-btn" onclick="addFromUrl()">پخش</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-all" onclick="setFilter('all')">همه</button>
+      <button class="tab-btn" id="tab-short" onclick="setFilter('short')">📱 شورت‌ها</button>
+      <button class="tab-btn" id="tab-long" onclick="setFilter('long')">🎥 ویدیوهای بلند</button>
+    </div>
+  </header>
 
   <div id="feed"></div>
 
   <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+    const tg = window.Telegram && window.Telegram.WebApp;
+    if (tg) tg.ready();
 
-    const videos = [
+    let currentFilter = "all";
+
+    const clips = [
       {
-        id: "v1",
-        title: "کلیپ نمونه اول (یوتیوب)",
-        type: "iframe",
-        src: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-        likes: 12,
-        liked: false,
-        comments: ["خیلی باحال بود!", "مرسی بابت اشتراک‌گذاری"]
+        title: "شورت ۱: اولین ویدیوی تاریخ یوتیوب",
+        youtubeId: "jNQXAC9IVRw",
+        isShort: true,
+        likes: 128,
+        comments: ["نوستالژی خالص!"]
       },
       {
-        id: "v2",
-        title: "کلیپ نمونه دوم (ویدیوی مستقیم MP4)",
-        type: "video",
-        src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        likes: 25,
-        liked: false,
-        comments: ["عالی بود 🔥"]
+        title: "ویدیوی بلند ۱: انیمیشن Big Buck Bunny",
+        youtubeId: "aqz-KE-bpKQ",
+        isShort: false,
+        likes: 94,
+        comments: ["عالی برای تست پخش"]
+      },
+      {
+        title: "ویدیوی بلند ۲: مستند طبیعت 4K",
+        youtubeId: "LXb3EKWsInQ",
+        isShort: false,
+        likes: 215,
+        comments: ["تصویرش فوق‌العاده‌ست"]
+      },
+      {
+        title: "شورت ۲: کلیپ کوتاه عمودی تستی",
+        youtubeId: "YE7VzlLtp-4",
+        isShort: true,
+        likes: 63,
+        comments: []
+      },
+      {
+        title: "ویدیوی بلند ۳: موزیک آرامش‌بخش لوفای",
+        youtubeId: "jfKfPfyJRdk",
+        isShort: false,
+        likes: 340,
+        comments: ["برای تمرکز عالیه"]
+      },
+      {
+        title: "ویدیوی بلند ۴: فیلم کوتاه سینمایی Sintel",
+        youtubeId: "eRsGyueVLvQ",
+        isShort: false,
+        likes: 172,
+        comments: ["داستانش باحاله"]
+      },
+      {
+        title: "ویدیوی بلند ۵: فیلم کوتاه Elephants Dream",
+        youtubeId: "TLkA0EVFAyo",
+        isShort: false,
+        likes: 88,
+        comments: []
+      },
+      {
+        title: "ویدیوی بلند ۶: تریلر و صحنه‌های اکشن/انیمیشن",
+        youtubeId: "ysz5S6PUM-U",
+        isShort: false,
+        likes: 154,
+        comments: ["روون باز می‌شه"]
+      },
+      {
+        title: "شورت ۳: کلیپ کوتاه سرگرم‌کننده",
+        youtubeId: "tgbNymZ7vqY",
+        isShort: true,
+        likes: 209,
+        comments: ["خنده‌دار بود!"]
+      },
+      {
+        title: "ویدیوی بلند ۷: موزیک و ریتم پرانرژی",
+        youtubeId: "3JZ_D3ELwOQ",
+        isShort: false,
+        likes: 410,
+        comments: []
+      },
+      {
+        title: "شورت ۴: ویدیوی کوتاه سریع",
+        youtubeId: "kJQP7kiw5Fk",
+        isShort: true,
+        likes: 285,
+        comments: ["قشنگ بود"]
+      },
+      {
+        title: "ویدیوی بلند ۸: اجرای زنده و موسیقی",
+        youtubeId: "9bZkp7q19f0",
+        isShort: false,
+        likes: 530,
+        comments: ["معروف‌ترینا رو آوردی!"]
       }
     ];
 
-    const feedEl = document.getElementById("feed");
+    function extractYoutubeInfo(url) {
+      const clean = url.trim();
+      const shortMatch = clean.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/);
+      if (shortMatch) return { id: shortMatch[1], isShort: true };
+
+      const watchMatch = clean.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+      if (watchMatch) return { id: watchMatch[1], isShort: false };
+
+      const youtuBeMatch = clean.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+      if (youtuBeMatch) return { id: youtuBeMatch[1], isShort: false };
+
+      const embedMatch = clean.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/);
+      if (embedMatch) return { id: embedMatch[1], isShort: false };
+
+      if (/^[a-zA-Z0-9_-]{11}$/.test(clean)) return { id: clean, isShort: false };
+      return null;
+    }
+
+    window.addFromUrl = function() {
+      const input = document.getElementById("ytUrlInput");
+      const info = extractYoutubeInfo(input.value);
+      if (!info) {
+        alert("لطفاً یک لینک معتبر یوتیوب یا Shorts وارد کن.");
+        return;
+      }
+      clips.unshift({
+        title: info.isShort ? "ویدیوی کوتاه اضافه شده توسط شما" : "ویدیوی یوتیوب اضافه شده توسط شما",
+        youtubeId: info.id,
+        isShort: info.isShort,
+        likes: 1,
+        comments: []
+      });
+      input.value = "";
+      renderFeed();
+    };
+
+    window.setFilter = function(type) {
+      currentFilter = type;
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      document.getElementById(`tab-${type}`).classList.add("active");
+      renderFeed();
+    };
 
     function renderFeed() {
-      feedEl.innerHTML = "";
-      videos.forEach((vid, index) => {
-        const mediaHtml =
-          vid.type === "iframe"
-            ? `<iframe src="${vid.src}" allowfullscreen></iframe>`
-            : `<video src="${vid.src}" controls playsinline></video>`;
+      const feedEl = document.getElementById("feed");
+      const query = document.getElementById("searchInput").value.trim().toLowerCase();
 
-        const commentsHtml = vid.comments
+      const filtered = clips
+        .map((item, originalIndex) => ({ ...item, originalIndex }))
+        .filter(item => {
+          if (currentFilter === "short" && !item.isShort) return false;
+          if (currentFilter === "long" && item.isShort) return false;
+          if (query && !item.title.toLowerCase().includes(query)) return false;
+          return true;
+        });
+
+      if (!filtered.length) {
+        feedEl.innerHTML = `<div class="empty">ویدیویی با این فیلتر پیدا نشد.</div>`;
+        return;
+      }
+
+      feedEl.innerHTML = "";
+
+      filtered.forEach(clip => {
+        const idx = clip.originalIndex;
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const commentsHtml = clip.comments
           .map(c => `<div class="comment-item">💬 ${c}</div>`)
           .join("");
 
-        const card = document.createElement("div");
-        card.className = "card";
         card.innerHTML = `
-          <div class="title">${vid.title}</div>
-          ${mediaHtml}
+          <div class="card-header">
+            <div class="title">${clip.title}</div>
+            <span class="badge">${clip.isShort ? "📱 Short" : "🎥 ویدیو"}</span>
+          </div>
+
+          <div class="player-wrap ${clip.isShort ? "short" : ""}">
+            <iframe
+              src="https://www.youtube.com/embed/${clip.youtubeId}"
+              title="${clip.title}"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </div>
+
           <div class="actions">
-            <button class="${vid.liked ? "liked" : ""}" onclick="toggleLike(${index})">
-              ${vid.liked ? "❤️" : "🤍"} لایک (${vid.likes})
+            <button class="action-btn like-btn ${clip.liked ? "liked" : ""}" onclick="toggleLike(${idx})">
+              ❤️ لایک (${clip.likes})
             </button>
-            <button onclick="focusComment(${index})">
-              💬 کامنت (${vid.comments.length})
+            <button class="action-btn" onclick="focusComment(${idx})">
+              💬 کامنت (${clip.comments.length})
             </button>
-            <button onclick="shareVideo(${index})">
+            <button class="action-btn" onclick="shareClip(${idx})">
               📤 ارسال به دوست
             </button>
           </div>
-          <div class="comments-box">
-            <div id="comments-${index}">${commentsHtml}</div>
-            <div class="comment-form">
-              <input id="input-${index}" type="text" placeholder="کامنت خودت رو بنویس..." />
-              <button class="send-btn" onclick="addComment(${index})">ارسال</button>
-            </div>
+
+          <div class="comments-box">${commentsHtml}</div>
+
+          <div class="comment-form">
+            <input id="input-${idx}" type="text" placeholder="کامنت خودت رو بنویس..." />
+            <button class="primary-btn" onclick="addComment(${idx})">ارسال</button>
           </div>
         `;
+
         feedEl.appendChild(card);
       });
     }
 
-    function toggleLike(index) {
-      const vid = videos[index];
-      vid.liked = !vid.liked;
-      vid.likes += vid.liked ? 1 : -1;
+    window.toggleLike = function(idx) {
+      clips[idx].liked = !clips[idx].liked;
+      clips[idx].likes += clips[idx].liked ? 1 : -1;
       renderFeed();
-    }
+    };
 
-    function focusComment(index) {
-      const inp = document.getElementById(`input-${index}`);
-      if (inp) inp.focus();
-    }
+    window.focusComment = function(idx) {
+      const el = document.getElementById(`input-${idx}`);
+      if (el) el.focus();
+    };
 
-    function addComment(index) {
-      const inp = document.getElementById(`input-${index}`);
-      const text = inp.value.trim();
-      if (!text) return;
-      const userName = tg.initDataUnsafe?.user?.first_name || "کاربر";
-      videos[index].comments.push(`${userName}: ${text}`);
+    window.addComment = function(idx) {
+      const el = document.getElementById(`input-${idx}`);
+      if (!el || !el.value.trim()) return;
+      clips[idx].comments.push(el.value.trim());
+      el.value = "";
       renderFeed();
-    }
+    };
 
-    function shareVideo(index) {
-      const vid = videos[index];
-      const shareText = encodeURIComponent(`این کلیپ رو ببین: ${vid.title}`);
-      const appUrl = encodeURIComponent(window.location.href);
-      const tgShareUrl = `https://t.me/share/url?url=${appUrl}&text=${shareText}`;
-      tg.openTelegramLink(tgShareUrl);
-    }
+    window.shareClip = function(idx) {
+      const item = clips[idx];
+      const url = `https://www.youtube.com/watch?v=${item.youtubeId}`;
+      const text = `${item.title} را در کلیپچی ببین:`;
+      if (tg && typeof tg.openTelegramLink === "function") {
+        tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`);
+      } else {
+        window.open(url, "_blank");
+      }
+    };
 
     renderFeed();
   </script>
