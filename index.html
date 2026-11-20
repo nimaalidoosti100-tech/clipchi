@@ -202,7 +202,7 @@
     </div>
 
     <div class="smart-tip" id="smartTip">
-      <span id="smartMessage">🎮 هر عبارتی بنویسی، پیشنهاد مرتبط را می‌دهم و می‌توانی مستقیم در یوتیوب Shorts هم بگردی.</span>
+      <span id="smartMessage">🎮 روی هر بازی بزن یا لینک YouTube Shorts همان بازی را اضافه کن؛ شورت‌های اضافه‌شده در گوشی تو ذخیره می‌مانند.</span>
       <button class="yt-search-btn" id="ytSearchAction" onclick="openYoutubeSearch()">🔎 جستجو در یوتیوب Shorts</button>
     </div>
 
@@ -235,12 +235,13 @@
     const tg = window.Telegram && window.Telegram.WebApp;
     if (tg) tg.ready();
 
+    const STORAGE_KEY = "clipchi_custom_shorts_v1";
     let selectedCategory = "all";
     let lastYoutubeQuery = "Roblox shorts";
 
-    const shorts = [
+    const defaultShorts = [
       {
-        title: "روبلاکس (Roblox): لحظه کوتاه سرگرم‌کننده و اکشن",
+        title: "روبلاکس (Roblox): شورت ۱ - لحظه کوتاه اکشن و سرگرمی",
         youtubeId: "eRsGyueVLvQ",
         category: "roblox",
         gameLabel: "Roblox",
@@ -248,7 +249,15 @@
         comments: ["فان بود!"]
       },
       {
-        title: "CS (کانتر): کلیپ کوتاه و هیجانی",
+        title: "روبلاکس (Roblox): شورت ۲ - کلیپ سریع و پرانرژی",
+        youtubeId: "tgbNymZ7vqY",
+        category: "roblox",
+        gameLabel: "Roblox",
+        likes: 149,
+        comments: []
+      },
+      {
+        title: "CS (کانتر): شورت ۱ - کلیپ کوتاه و هیجانی",
         youtubeId: "YE7VzlLtp-4",
         category: "cs",
         gameLabel: "CS",
@@ -256,7 +265,15 @@
         comments: ["پخش عمودی عالیه"]
       },
       {
-        title: "ماینکرفت (Minecraft): دنیای بلوکی و ساخت‌وساز",
+        title: "CS (کانتر): شورت ۲ - لحظه کوتاه آزمایشی",
+        youtubeId: "jNQXAC9IVRw",
+        category: "cs",
+        gameLabel: "CS",
+        likes: 120,
+        comments: []
+      },
+      {
+        title: "ماینکرفت (Minecraft): شورت ۱ - دنیای بلوکی و انیمیشن",
         youtubeId: "aqz-KE-bpKQ",
         category: "minecraft",
         gameLabel: "Minecraft",
@@ -264,14 +281,52 @@
         comments: ["فضای باحالی داره"]
       },
       {
-        title: "کالاف (COD): صحنه کوتاه پرانرژی و ریتمیک",
+        title: "ماینکرفت (Minecraft): شورت ۲ - منظره و ساخت‌وساز",
+        youtubeId: "LXb3EKWsInQ",
+        category: "minecraft",
+        gameLabel: "Minecraft",
+        likes: 193,
+        comments: []
+      },
+      {
+        title: "کالاف (COD): شورت ۱ - صحنه کوتاه پرانرژی و ریتمیک",
         youtubeId: "3JZ_D3ELwOQ",
         category: "cod",
         gameLabel: "Call of Duty",
         likes: 312,
         comments: ["برای هایلایت کالاف عالیه"]
+      },
+      {
+        title: "کالاف (COD): شورت ۲ - کلیپ کوتاه پرتحرک",
+        youtubeId: "kJQP7kiw5Fk",
+        category: "cod",
+        gameLabel: "Call of Duty",
+        likes: 241,
+        comments: []
       }
     ];
+
+    function loadCustomShorts() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveCustomShorts(customList) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(customList));
+      } catch (e) {}
+    }
+
+    let customShorts = loadCustomShorts();
+
+    function getAllShorts() {
+      return [...customShorts, ...defaultShorts];
+    }
 
     const gameRules = [
       { cat: "roblox", ytQuery: "Roblox shorts", words: ["روبلاکس", "روبلاس", "roblox", "rblx"] },
@@ -400,14 +455,18 @@
         cod: "Call of Duty"
       };
 
-      shorts.unshift({
+      const newShort = {
         title: `شورت جدید ${labels[targetCat]} اضافه شده توسط شما`,
         youtubeId: shortId,
         category: targetCat,
         gameLabel: labels[targetCat],
         likes: 1,
-        comments: []
-      });
+        comments: [],
+        isCustom: true
+      };
+
+      customShorts.unshift(newShort);
+      saveCustomShorts(customShorts);
 
       input.value = "";
       renderFeed();
@@ -417,8 +476,9 @@
       const feedEl = document.getElementById("feed");
       const countEl = document.getElementById("shortCount");
       const query = document.getElementById("searchInput").value.trim().toLowerCase();
+      const allShorts = getAllShorts();
 
-      const filtered = shorts
+      const filtered = allShorts
         .map((item, originalIndex) => ({ ...item, originalIndex }))
         .filter(item => {
           if (selectedCategory !== "all" && item.category !== selectedCategory) return false;
@@ -483,10 +543,21 @@
       });
     }
 
-    window.toggleLike = function(idx) {
-      shorts[idx].liked = !shorts[idx].liked;
-      shorts[idx].likes += shorts[idx].liked ? 1 : -1;
+    function mutateItemByIndex(idx, updater) {
+      if (idx < customShorts.length) {
+        updater(customShorts[idx]);
+        saveCustomShorts(customShorts);
+      } else {
+        updater(defaultShorts[idx - customShorts.length]);
+      }
       renderFeed();
+    }
+
+    window.toggleLike = function(idx) {
+      mutateItemByIndex(idx, item => {
+        item.liked = !item.liked;
+        item.likes += item.liked ? 1 : -1;
+      });
     };
 
     window.focusComment = function(idx) {
@@ -497,13 +568,16 @@
     window.addComment = function(idx) {
       const el = document.getElementById(`input-${idx}`);
       if (!el || !el.value.trim()) return;
-      shorts[idx].comments.push(el.value.trim());
+      const text = el.value.trim();
       el.value = "";
-      renderFeed();
+      mutateItemByIndex(idx, item => {
+        item.comments.push(text);
+      });
     };
 
     window.shareShort = function(idx) {
-      const item = shorts[idx];
+      const item = getAllShorts()[idx];
+      if (!item) return;
       const url = `https://www.youtube.com/shorts/${item.youtubeId}`;
       const text = `${item.title} را در کلیپچی ببین:`;
       if (tg && typeof tg.openTelegramLink === "function") {
