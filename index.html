@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>کلیپچی | شورت‌های روبلاکس، CS، ماینکرفت و کالاف</title>
+  <title>کلیپچی | شورت‌های Roblox، CS، Minecraft و COD</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * { box-sizing: border-box; font-family: Vazirmatn, system-ui, sans-serif; }
@@ -68,7 +68,21 @@
       border: 1px solid #3b2d6b;
       padding: 8px 10px;
       border-radius: 10px;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .yt-search-btn {
+      align-self: flex-start;
+      border: 0;
+      border-radius: 8px;
+      background: #dc2626;
+      color: #fff;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
     }
     .stats-bar {
       display: flex;
@@ -173,7 +187,7 @@
     .empty {
       text-align: center;
       color: #94a3b8;
-      padding: 28px 10px;
+      padding: 24px 10px;
       font-size: 14px;
     }
   </style>
@@ -183,12 +197,13 @@
     <h1>🎮 کلیپچی | شورت‌های Roblox، CS، Minecraft و COD</h1>
 
     <div class="smart-box">
-      <input id="smartPromptInput" type="text" placeholder="نام بازی را بنویس (روبلاکس، CS، ماینکرفت، کالاف)..." />
-      <button class="smart-btn" onclick="runSmartAssist()">پیدا کن</button>
+      <input id="smartPromptInput" type="text" placeholder="چی می‌خوای؟ (مثلاً: روبلاس، CS، ماینکرفت، کالاف)..." />
+      <button class="smart-btn" onclick="runSmartAssist()">بررسی و جستجو</button>
     </div>
 
     <div class="smart-tip" id="smartTip">
-      🎮 روی نام هر بازی بزن یا لینک YouTube Shorts همان بازی را در کادر پایین پیست کن تا بلافاصله پخش شود.
+      <span id="smartMessage">🎮 هر عبارتی بنویسی، پیشنهاد مرتبط را می‌دهم و می‌توانی مستقیم در یوتیوب Shorts هم بگردی.</span>
+      <button class="yt-search-btn" id="ytSearchAction" onclick="openYoutubeSearch()">🔎 جستجو در یوتیوب Shorts</button>
     </div>
 
     <div class="chips" id="categoryChips">
@@ -200,11 +215,11 @@
     </div>
 
     <div class="search-box">
-      <input id="searchInput" type="text" placeholder="جستجو در عنوان شورت‌ها..." oninput="renderFeed()" />
+      <input id="searchInput" type="text" placeholder="فیلتر سریع در عنوان شورت‌ها..." oninput="renderFeed()" />
     </div>
 
     <div class="add-box">
-      <input id="ytShortInput" type="text" placeholder="لینک YouTube Shorts روبلاکس/CS/ماینکرفت/کالاف را پیست کن..." />
+      <input id="ytShortInput" type="text" placeholder="لینک YouTube Shorts را اینجا پیست کن..." />
       <button class="primary-btn" onclick="addShortFromUrl()">افزودن شورت</button>
     </div>
 
@@ -221,8 +236,8 @@
     if (tg) tg.ready();
 
     let selectedCategory = "all";
+    let lastYoutubeQuery = "Roblox shorts";
 
-    // هر آیتم با شناسه معتبر یوتیوب و برچسب بازی مشخص شده است
     const shorts = [
       {
         title: "روبلاکس (Roblox): لحظه کوتاه سرگرم‌کننده و اکشن",
@@ -258,18 +273,18 @@
       }
     ];
 
-    const gameKeywords = [
-      { cat: "roblox", words: ["روبلاکس", "roblox", "rblx"] },
-      { cat: "cs", words: ["cs", "کانتر", "counter", "استرایک", "strike", "cs2", "csgo"] },
-      { cat: "minecraft", words: ["ماینکرفت", "ماینکرافت", "minecraft", "mc"] },
-      { cat: "cod", words: ["کالاف", "کال اف", "cod", "call of duty", "وارزون", "warzone"] }
+    const gameRules = [
+      { cat: "roblox", ytQuery: "Roblox shorts", words: ["روبلاکس", "روبلاس", "roblox", "rblx"] },
+      { cat: "cs", ytQuery: "Counter Strike shorts", words: ["cs", "کانتر", "counter", "استرایک", "strike", "cs2", "csgo"] },
+      { cat: "minecraft", ytQuery: "Minecraft shorts", words: ["ماینکرفت", "ماینکرافت", "ماینکرف", "minecraft", "mc"] },
+      { cat: "cod", ytQuery: "Call of Duty shorts", words: ["کالاف", "کال اف", "cod", "call of duty", "وارزون", "warzone"] }
     ];
 
-    function detectGameCategory(text) {
+    function findGameRule(text) {
       const lower = text.toLowerCase();
-      for (const item of gameKeywords) {
-        if (item.words.some(w => lower.includes(w))) {
-          return item.cat;
+      for (const rule of gameRules) {
+        if (rule.words.some(w => lower.includes(w))) {
+          return rule;
         }
       }
       return null;
@@ -278,29 +293,45 @@
     window.runSmartAssist = function() {
       const input = document.getElementById("smartPromptInput");
       const searchInput = document.getElementById("searchInput");
-      const tipEl = document.getElementById("smartTip");
-      const text = input.value.trim();
+      const msgEl = document.getElementById("smartMessage");
+      const btnEl = document.getElementById("ytSearchAction");
+      const raw = input.value.trim();
 
-      if (!text) {
-        selectCategory("all");
+      if (!raw) {
+        selectCategory("all", false);
         searchInput.value = "";
-        tipEl.textContent = "🎮 همه شورت‌های بازی‌ها نمایش داده شدند.";
+        lastYoutubeQuery = "gaming shorts";
+        msgEl.textContent = "🎮 همه شورت‌ها نمایش داده شدند. یک بازی بنویس تا پیشنهاد بدهم.";
+        btnEl.textContent = "🔎 جستجو در یوتیوب Shorts";
         renderFeed();
         return;
       }
 
-      const detected = detectGameCategory(text);
-      if (detected) {
-        selectCategory(detected, false);
+      const matched = findGameRule(raw);
+      if (matched) {
+        selectCategory(matched.cat, false);
         searchInput.value = "";
-        tipEl.textContent = `✨ شورت‌های مربوط به «${text}» را جدا کردم.`;
+        lastYoutubeQuery = matched.ytQuery;
+        msgEl.textContent = `✨ عبارت «${raw}» را به «${matched.ytQuery}» مَپ کردم؛ شورت‌های این دسته پایین آمده‌اند.`;
+        btnEl.textContent = `🔎 باز کردن «${matched.ytQuery}» در یوتیوب`;
       } else {
         selectCategory("all", false);
-        searchInput.value = text;
-        tipEl.textContent = `🔎 برای «${text}» جستجو انجام شد.`;
+        searchInput.value = raw;
+        lastYoutubeQuery = `${raw} shorts`;
+        msgEl.textContent = `🔎 برای «${raw}» در لیست گشتم؛ برای دیدن نتایج زنده در یوتیوب دکمه زیر را بزن.`;
+        btnEl.textContent = `🔎 جستجوی «${lastYoutubeQuery}» در یوتیوب`;
       }
 
       renderFeed();
+    };
+
+    window.openYoutubeSearch = function() {
+      const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(lastYoutubeQuery)}`;
+      if (tg && typeof tg.openLink === "function") {
+        tg.openLink(url);
+      } else {
+        window.open(url, "_blank");
+      }
     };
 
     window.selectCategory = function(cat, updateTip = true) {
@@ -316,10 +347,20 @@
         minecraft: "ماینکرفت (Minecraft)",
         cod: "کالاف (COD)"
       };
+      const ytQueries = {
+        all: "gaming shorts",
+        roblox: "Roblox shorts",
+        cs: "Counter Strike shorts",
+        minecraft: "Minecraft shorts",
+        cod: "Call of Duty shorts"
+      };
+
+      lastYoutubeQuery = ytQueries[cat] || "gaming shorts";
       document.getElementById("activeModeLabel").textContent = `حالت: ${names[cat] || "همه بازی‌ها"}`;
+      document.getElementById("ytSearchAction").textContent = `🔎 جستجوی «${lastYoutubeQuery}» در یوتیوب`;
 
       if (updateTip) {
-        document.getElementById("smartTip").textContent = `🎮 فیلتر روی «${names[cat]}» قرار گرفت.`;
+        document.getElementById("smartMessage").textContent = `🎮 فیلتر روی «${names[cat]}» تنظیم شد.`;
       }
 
       renderFeed();
@@ -351,7 +392,7 @@
         return;
       }
 
-      const targetCat = selectedCategory === "all" ? "cod" : selectedCategory;
+      const targetCat = selectedCategory === "all" ? "roblox" : selectedCategory;
       const labels = {
         roblox: "Roblox",
         cs: "CS",
@@ -388,7 +429,7 @@
       countEl.textContent = `${filtered.length} شورت`;
 
       if (!filtered.length) {
-        feedEl.innerHTML = `<div class="empty">شورتی در این بخش پیدا نشد. لینک Short بازی موردنظرت را بالا پیست کن!</div>`;
+        feedEl.innerHTML = `<div class="empty">در لیست فعلی موردی پیدا نشد؛ از دکمه‌ی قرمز بالا برای جستجو در یوتیوب استفاده کن و لینک Short را پایین پیست کن.</div>`;
         return;
       }
 
