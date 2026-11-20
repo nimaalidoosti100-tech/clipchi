@@ -3,30 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>کلیپچی | Clipchi</title>
+  <title>کلیپچی | شورت‌های هوشمند یوتیوب</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * { box-sizing: border-box; font-family: Vazirmatn, system-ui, sans-serif; }
     body {
       margin: 0;
       padding: 14px;
-      background: #0f1218;
+      background: #0d1017;
       color: #f3f4f6;
     }
     header {
       position: sticky;
       top: 0;
       z-index: 10;
-      background: #0f1218;
+      background: #0d1017;
       padding-bottom: 10px;
-      border-bottom: 1px solid #1f2633;
+      border-bottom: 1px solid #1e2636;
       margin-bottom: 14px;
     }
     h1 {
       font-size: 19px;
       margin: 0 0 10px;
     }
-    .add-box, .search-box {
+    .smart-box, .add-box, .search-box {
       display: flex;
       gap: 8px;
       margin-bottom: 8px;
@@ -35,37 +35,55 @@
       flex: 1;
       padding: 10px 12px;
       border-radius: 10px;
-      border: 1px solid #2b3446;
-      background: #171c26;
+      border: 1px solid #2b3549;
+      background: #161c28;
       color: #fff;
       font-size: 13px;
     }
-    .tabs {
+    .chips {
       display: flex;
-      gap: 8px;
-      margin-top: 6px;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 6px 0 8px;
     }
-    .tab-btn {
-      flex: 1;
-      padding: 8px;
-      border-radius: 10px;
-      border: 0;
-      background: #1c2230;
+    .chip {
+      border: 1px solid #2b3549;
+      background: #161c28;
       color: #cbd5e1;
-      font-size: 13px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 11.5px;
       cursor: pointer;
     }
-    .tab-btn.active {
+    .chip.active {
       background: #2563eb;
+      border-color: #2563eb;
       color: #fff;
       font-weight: 700;
     }
+    .smart-tip {
+      font-size: 12px;
+      color: #93c5fd;
+      background: #131c2e;
+      border: 1px solid #1e3a5f;
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+    }
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
     .card {
-      background: #171c26;
+      background: #161c28;
       border-radius: 16px;
       padding: 14px;
       margin-bottom: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
     }
     .card-header {
       display: flex;
@@ -82,22 +100,19 @@
       font-size: 11px;
       padding: 4px 8px;
       border-radius: 999px;
-      background: #283246;
-      color: #93c5fd;
+      background: #271b2d;
+      color: #fda4af;
       white-space: nowrap;
     }
-    .player-wrap {
+    .player-wrap.short {
       position: relative;
       width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #000;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    .player-wrap.short {
-      max-width: 330px;
+      max-width: 340px;
       margin: 0 auto;
       aspect-ratio: 9 / 16;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
     }
     iframe {
       width: 100%;
@@ -114,7 +129,7 @@
       border: 0;
       border-radius: 10px;
       padding: 10px 6px;
-      background: #242c3d;
+      background: #232c3d;
       color: #fff;
       font-size: 12.5px;
       cursor: pointer;
@@ -129,7 +144,7 @@
       gap: 6px;
     }
     .comment-item {
-      background: #11151d;
+      background: #10141d;
       padding: 8px 10px;
       border-radius: 8px;
       font-size: 12.5px;
@@ -139,15 +154,21 @@
       gap: 8px;
       margin-top: 8px;
     }
-    .primary-btn {
+    .primary-btn, .smart-btn {
       border: 0;
       border-radius: 10px;
-      background: #2563eb;
       color: #fff;
       padding: 10px 14px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
+      white-space: nowrap;
+    }
+    .primary-btn {
+      background: #e11d48;
+    }
+    .smart-btn {
+      background: #2563eb;
     }
     .empty {
       text-align: center;
@@ -159,21 +180,37 @@
 </head>
 <body>
   <header>
-    <h1>🎬 کلیپچی | شورت‌ها و ویدیوهای یوتیوب</h1>
+    <h1>✨ کلیپچی | دستیار هوشمند شورت‌های یوتیوب</h1>
+
+    <div class="smart-box">
+      <input id="smartPromptInput" type="text" placeholder="بنویس چی می‌خوای (مثلاً: خنده‌دار، موزیک، طبیعت، گیم)..." />
+      <button class="smart-btn" onclick="runSmartAssist()">پیشنهاد بده</button>
+    </div>
+
+    <div class="smart-tip" id="smartTip">
+      💡 هر موضوعی بنویسی یا روی دسته‌ها بزنی، شورت‌های مرتبط را مرتب می‌کنم؛ یا لینک Short را مستقیم پیست کن.
+    </div>
+
+    <div class="chips" id="categoryChips">
+      <button class="chip active" data-cat="all" onclick="selectCategory('all')">همه</button>
+      <button class="chip" data-cat="fun" onclick="selectCategory('fun')">😂 طنز و سرگرمی</button>
+      <button class="chip" data-cat="music" onclick="selectCategory('music')">🎵 موزیک و ریتم</button>
+      <button class="chip" data-cat="nature" onclick="selectCategory('nature')">🌿 طبیعت و انیمیشن</button>
+      <button class="chip" data-cat="gaming" onclick="selectCategory('gaming')">🎮 گیم و اکشن</button>
+    </div>
 
     <div class="search-box">
-      <input id="searchInput" type="text" placeholder="جستجو در عنوان ویدیوها..." oninput="renderFeed()" />
+      <input id="searchInput" type="text" placeholder="جستجو در عنوان شورت‌ها..." oninput="renderFeed()" />
     </div>
 
     <div class="add-box">
-      <input id="ytUrlInput" type="text" placeholder="لینک یوتیوب یا Shorts را پیست کن..." />
-      <button class="primary-btn" onclick="addFromUrl()">پخش</button>
+      <input id="ytShortInput" type="text" placeholder="لینک YouTube Shorts را پیست کن..." />
+      <button class="primary-btn" onclick="addShortFromUrl()">افزودن Short</button>
     </div>
 
-    <div class="tabs">
-      <button class="tab-btn active" id="tab-all" onclick="setFilter('all')">همه</button>
-      <button class="tab-btn" id="tab-short" onclick="setFilter('short')">📱 شورت‌ها</button>
-      <button class="tab-btn" id="tab-long" onclick="setFilter('long')">🎥 ویدیوهای بلند</button>
+    <div class="stats-bar">
+      <span id="activeModeLabel">حالت: همه شورت‌ها</span>
+      <span id="shortCount"></span>
     </div>
   </header>
 
@@ -183,190 +220,243 @@
     const tg = window.Telegram && window.Telegram.WebApp;
     if (tg) tg.ready();
 
-    let currentFilter = "all";
+    let selectedCategory = "all";
 
-    const clips = [
+    const shorts = [
       {
-        title: "شورت ۱: اولین ویدیوی تاریخ یوتیوب",
+        title: "شورت ۱: اولین ویدیوی تاریخ یوتیوب (طبیعت و فیل)",
         youtubeId: "jNQXAC9IVRw",
-        isShort: true,
-        likes: 128,
+        category: "nature",
+        likes: 142,
         comments: ["نوستالژی خالص!"]
       },
       {
-        title: "ویدیوی بلند ۱: انیمیشن Big Buck Bunny",
-        youtubeId: "aqz-KE-bpKQ",
-        isShort: false,
-        likes: 94,
-        comments: ["عالی برای تست پخش"]
-      },
-      {
-        title: "ویدیوی بلند ۲: مستند طبیعت 4K",
-        youtubeId: "LXb3EKWsInQ",
-        isShort: false,
-        likes: 215,
-        comments: ["تصویرش فوق‌العاده‌ست"]
-      },
-      {
-        title: "شورت ۲: کلیپ کوتاه عمودی تستی",
+        title: "شورت ۲: کلیپ کوتاه آزمایشی عمودی (انیمیشن)",
         youtubeId: "YE7VzlLtp-4",
-        isShort: true,
-        likes: 63,
+        category: "nature",
+        likes: 87,
+        comments: ["پخش عمودی عالیه"]
+      },
+      {
+        title: "شورت ۳: لحظه کوتاه سرگرم‌کننده و خنده‌دار",
+        youtubeId: "tgbNymZ7vqY",
+        category: "fun",
+        likes: 219,
+        comments: ["خیلی باحال بود!"]
+      },
+      {
+        title: "شورت ۴: ریتم و موزیک کوتاه پرانرژی",
+        youtubeId: "kJQP7kiw5Fk",
+        category: "music",
+        likes: 305,
         comments: []
       },
       {
-        title: "ویدیوی بلند ۳: موزیک آرامش‌بخش لوفای",
-        youtubeId: "jfKfPfyJRdk",
-        isShort: false,
-        likes: 340,
-        comments: ["برای تمرکز عالیه"]
-      },
-      {
-        title: "ویدیوی بلند ۴: فیلم کوتاه سینمایی Sintel",
-        youtubeId: "eRsGyueVLvQ",
-        isShort: false,
-        likes: 172,
-        comments: ["داستانش باحاله"]
-      },
-      {
-        title: "ویدیوی بلند ۵: فیلم کوتاه Elephants Dream",
-        youtubeId: "TLkA0EVFAyo",
-        isShort: false,
-        likes: 88,
-        comments: []
-      },
-      {
-        title: "ویدیوی بلند ۶: تریلر و صحنه‌های اکشن/انیمیشن",
-        youtubeId: "ysz5S6PUM-U",
-        isShort: false,
-        likes: 154,
+        title: "شورت ۵: صحنه کوتاه انیمیشن باحال",
+        youtubeId: "aqz-KE-bpKQ",
+        category: "fun",
+        likes: 112,
         comments: ["روون باز می‌شه"]
       },
       {
-        title: "شورت ۳: کلیپ کوتاه سرگرم‌کننده",
-        youtubeId: "tgbNymZ7vqY",
-        isShort: true,
-        likes: 209,
-        comments: ["خنده‌دار بود!"]
+        title: "شورت ۶: نمایی از طبیعت 4K",
+        youtubeId: "LXb3EKWsInQ",
+        category: "nature",
+        likes: 264,
+        comments: ["رنگ‌هاش فوق‌العاده‌ست"]
       },
       {
-        title: "ویدیوی بلند ۷: موزیک و ریتم پرانرژی",
-        youtubeId: "3JZ_D3ELwOQ",
-        isShort: false,
-        likes: 410,
+        title: "شورت ۷: بیت و موزیک کوتاه آرامش‌بخش",
+        youtubeId: "jfKfPfyJRdk",
+        category: "music",
+        likes: 178,
         comments: []
       },
       {
-        title: "شورت ۴: ویدیوی کوتاه سریع",
-        youtubeId: "kJQP7kiw5Fk",
-        isShort: true,
-        likes: 285,
-        comments: ["قشنگ بود"]
+        title: "شورت ۸: صحنه کوتاه اکشن و فانتزی (گیم/سینما)",
+        youtubeId: "eRsGyueVLvQ",
+        category: "gaming",
+        likes: 95,
+        comments: []
       },
       {
-        title: "ویدیوی بلند ۸: اجرای زنده و موسیقی",
+        title: "شورت ۹: کلیپ کوتاه موزیک و ریتم",
+        youtubeId: "3JZ_D3ELwOQ",
+        category: "music",
+        likes: 340,
+        comments: ["عالی بود"]
+      },
+      {
+        title: "شورت ۱۰: کلیپ کوتاه سرگرم‌کننده منتخب",
         youtubeId: "9bZkp7q19f0",
-        isShort: false,
-        likes: 530,
-        comments: ["معروف‌ترینا رو آوردی!"]
+        category: "fun",
+        likes: 412,
+        comments: ["فید شورت‌ها راه افتاد!"]
       }
     ];
 
-    function extractYoutubeInfo(url) {
-      const clean = url.trim();
-      const shortMatch = clean.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/);
-      if (shortMatch) return { id: shortMatch[1], isShort: true };
+    const keywordMap = [
+      { cat: "fun", words: ["خنده", "خنده‌دار", "طنز", "سرگرمی", "باحال", "جوک", "funny"] },
+      { cat: "music", words: ["موزیک", "آهنگ", "ریتم", "بیت", "موسیقی", "music", "lofi"] },
+      { cat: "nature", words: ["طبیعت", "انیمیشن", "حیوانات", "منظره", "4k", "nature"] },
+      { cat: "gaming", words: ["گیم", "بازی", "اکشن", "هیجان", "gaming", "action"] }
+    ];
 
-      const watchMatch = clean.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
-      if (watchMatch) return { id: watchMatch[1], isShort: false };
-
-      const youtuBeMatch = clean.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
-      if (youtuBeMatch) return { id: youtuBeMatch[1], isShort: false };
-
-      const embedMatch = clean.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/);
-      if (embedMatch) return { id: embedMatch[1], isShort: false };
-
-      if (/^[a-zA-Z0-9_-]{11}$/.test(clean)) return { id: clean, isShort: false };
+    function detectCategoryFromText(text) {
+      const lower = text.toLowerCase();
+      for (const group of keywordMap) {
+        if (group.words.some(w => lower.includes(w))) {
+          return group.cat;
+        }
+      }
       return null;
     }
 
-    window.addFromUrl = function() {
-      const input = document.getElementById("ytUrlInput");
-      const info = extractYoutubeInfo(input.value);
-      if (!info) {
-        alert("لطفاً یک لینک معتبر یوتیوب یا Shorts وارد کن.");
+    window.runSmartAssist = function() {
+      const input = document.getElementById("smartPromptInput");
+      const searchInput = document.getElementById("searchInput");
+      const tipEl = document.getElementById("smartTip");
+      const promptText = input.value.trim();
+
+      if (!promptText) {
+        selectCategory("all");
+        searchInput.value = "";
+        tipEl.textContent = "💡 همه شورت‌ها نمایش داده شدند. یک موضوع بنویس تا پیشنهاد بدهم.";
+        renderFeed();
         return;
       }
-      clips.unshift({
-        title: info.isShort ? "ویدیوی کوتاه اضافه شده توسط شما" : "ویدیوی یوتیوب اضافه شده توسط شما",
-        youtubeId: info.id,
-        isShort: info.isShort,
-        likes: 1,
-        comments: []
-      });
-      input.value = "";
+
+      const detectedCat = detectCategoryFromText(promptText);
+      if (detectedCat) {
+        selectCategory(detectedCat, false);
+        searchInput.value = "";
+        tipEl.textContent = `✨ بر اساس درخواست «${promptText}»، شورت‌های مرتبط این دسته را بالا آوردم.`;
+      } else {
+        selectCategory("all", false);
+        searchInput.value = promptText;
+        tipEl.textContent = `🔎 برای «${promptText}» در عنوان شورت‌ها گشتم؛ اگر لینک Short خاصی داری، پایین پیست کن.`;
+      }
+
       renderFeed();
     };
 
-    window.setFilter = function(type) {
-      currentFilter = type;
-      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-      document.getElementById(`tab-${type}`).classList.add("active");
+    window.selectCategory = function(cat, updateTip = true) {
+      selectedCategory = cat;
+      document.querySelectorAll("#categoryChips .chip").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.cat === cat);
+      });
+
+      const labels = {
+        all: "همه شورت‌ها",
+        fun: "طنز و سرگرمی",
+        music: "موزیک و ریتم",
+        nature: "طبیعت و انیمیشن",
+        gaming: "گیم و اکشن"
+      };
+      document.getElementById("activeModeLabel").textContent = `حالت: ${labels[cat] || "همه شورت‌ها"}`;
+
+      if (updateTip) {
+        document.getElementById("smartTip").textContent =
+          cat === "all"
+            ? "💡 همه شورت‌ها فعال هستند."
+            : `💡 فیلتر روی «${labels[cat]}» تنظیم شد.`;
+      }
+
+      renderFeed();
+    };
+
+    function extractShortId(inputText) {
+      const clean = inputText.trim();
+      const shortMatch = clean.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/);
+      if (shortMatch) return shortMatch[1];
+
+      const watchMatch = clean.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+      if (watchMatch) return watchMatch[1];
+
+      const youtuBeMatch = clean.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+      if (youtuBeMatch) return youtuBeMatch[1];
+
+      const embedMatch = clean.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/);
+      if (embedMatch) return embedMatch[1];
+
+      if (/^[a-zA-Z0-9_-]{11}$/.test(clean)) return clean;
+      return null;
+    }
+
+    window.addShortFromUrl = function() {
+      const input = document.getElementById("ytShortInput");
+      const shortId = extractShortId(input.value);
+      if (!shortId) {
+        alert("لطفاً یک لینک معتبر YouTube Shorts وارد کن.");
+        return;
+      }
+
+      shorts.unshift({
+        title: "شورت اضافه شده توسط شما",
+        youtubeId: shortId,
+        category: selectedCategory === "all" ? "fun" : selectedCategory,
+        likes: 1,
+        comments: []
+      });
+
+      input.value = "";
       renderFeed();
     };
 
     function renderFeed() {
       const feedEl = document.getElementById("feed");
+      const countEl = document.getElementById("shortCount");
       const query = document.getElementById("searchInput").value.trim().toLowerCase();
 
-      const filtered = clips
+      const filtered = shorts
         .map((item, originalIndex) => ({ ...item, originalIndex }))
         .filter(item => {
-          if (currentFilter === "short" && !item.isShort) return false;
-          if (currentFilter === "long" && item.isShort) return false;
+          if (selectedCategory !== "all" && item.category !== selectedCategory) return false;
           if (query && !item.title.toLowerCase().includes(query)) return false;
           return true;
         });
 
+      countEl.textContent = `${filtered.length} شورت`;
+
       if (!filtered.length) {
-        feedEl.innerHTML = `<div class="empty">ویدیویی با این فیلتر پیدا نشد.</div>`;
+        feedEl.innerHTML = `<div class="empty">شورتی با این فیلتر پیدا نشد. می‌تونی لینک Short خودت رو بالا پیست کنی!</div>`;
         return;
       }
 
       feedEl.innerHTML = "";
 
-      filtered.forEach(clip => {
-        const idx = clip.originalIndex;
+      filtered.forEach(item => {
+        const idx = item.originalIndex;
         const card = document.createElement("div");
         card.className = "card";
 
-        const commentsHtml = clip.comments
+        const commentsHtml = item.comments
           .map(c => `<div class="comment-item">💬 ${c}</div>`)
           .join("");
 
         card.innerHTML = `
           <div class="card-header">
-            <div class="title">${clip.title}</div>
-            <span class="badge">${clip.isShort ? "📱 Short" : "🎥 ویدیو"}</span>
+            <div class="title">${item.title}</div>
+            <span class="badge">📱 Short</span>
           </div>
 
-          <div class="player-wrap ${clip.isShort ? "short" : ""}">
+          <div class="player-wrap short">
             <iframe
-              src="https://www.youtube.com/embed/${clip.youtubeId}"
-              title="${clip.title}"
+              src="https://www.youtube.com/embed/${item.youtubeId}"
+              title="${item.title}"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen>
             </iframe>
           </div>
 
           <div class="actions">
-            <button class="action-btn like-btn ${clip.liked ? "liked" : ""}" onclick="toggleLike(${idx})">
-              ❤️ لایک (${clip.likes})
+            <button class="action-btn like-btn ${item.liked ? "liked" : ""}" onclick="toggleLike(${idx})">
+              ❤️ لایک (${item.likes})
             </button>
             <button class="action-btn" onclick="focusComment(${idx})">
-              💬 کامنت (${clip.comments.length})
+              💬 کامنت (${item.comments.length})
             </button>
-            <button class="action-btn" onclick="shareClip(${idx})">
+            <button class="action-btn" onclick="shareShort(${idx})">
               📤 ارسال به دوست
             </button>
           </div>
@@ -384,8 +474,8 @@
     }
 
     window.toggleLike = function(idx) {
-      clips[idx].liked = !clips[idx].liked;
-      clips[idx].likes += clips[idx].liked ? 1 : -1;
+      shorts[idx].liked = !shorts[idx].liked;
+      shorts[idx].likes += shorts[idx].liked ? 1 : -1;
       renderFeed();
     };
 
@@ -397,14 +487,14 @@
     window.addComment = function(idx) {
       const el = document.getElementById(`input-${idx}`);
       if (!el || !el.value.trim()) return;
-      clips[idx].comments.push(el.value.trim());
+      shorts[idx].comments.push(el.value.trim());
       el.value = "";
       renderFeed();
     };
 
-    window.shareClip = function(idx) {
-      const item = clips[idx];
-      const url = `https://www.youtube.com/watch?v=${item.youtubeId}`;
+    window.shareShort = function(idx) {
+      const item = shorts[idx];
+      const url = `https://www.youtube.com/shorts/${item.youtubeId}`;
       const text = `${item.title} را در کلیپچی ببین:`;
       if (tg && typeof tg.openTelegramLink === "function") {
         tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`);
