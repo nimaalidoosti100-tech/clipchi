@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مینی‌اپ کلیپ و ویدیو</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #0f1115;
+      color: #fff;
+      padding: 16px;
+    }
+    .card {
+      background: #1a1d24;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 18px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    }
+    .title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    video, iframe {
+      width: 100%;
+      height: 220px;
+      border-radius: 12px;
+      border: none;
+      background: #000;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      background: #282d38;
+      color: #fff;
+    }
+    button.liked {
+      background: #e11d48;
+    }
+    .comments-box {
+      margin-top: 12px;
+      border-top: 1px solid #2b303c;
+      padding-top: 10px;
+    }
+    .comment-item {
+      font-size: 13px;
+      background: #12151b;
+      padding: 8px 10px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+    }
+    .comment-form {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    input {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #343a48;
+      background: #12151b;
+      color: #fff;
+    }
+    .send-btn {
+      flex: 0 0 auto;
+      background: #2563eb;
+      padding: 8px 14px;
+    }
+  </style>
+</head>
+<body>
+  <h2>🎬 مینی‌اپ ویدیو و کلیپ</h2>
+
+  <div id="feed"></div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const videos = [
+      {
+        id: "v1",
+        title: "کلیپ نمونه اول (یوتیوب)",
+        type: "iframe",
+        src: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        likes: 12,
+        liked: false,
+        comments: ["خیلی باحال بود!", "مرسی بابت اشتراک‌گذاری"]
+      },
+      {
+        id: "v2",
+        title: "کلیپ نمونه دوم (ویدیوی مستقیم MP4)",
+        type: "video",
+        src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        likes: 25,
+        liked: false,
+        comments: ["عالی بود 🔥"]
+      }
+    ];
+
+    const feedEl = document.getElementById("feed");
+
+    function renderFeed() {
+      feedEl.innerHTML = "";
+      videos.forEach((vid, index) => {
+        const mediaHtml =
+          vid.type === "iframe"
+            ? `<iframe src="${vid.src}" allowfullscreen></iframe>`
+            : `<video src="${vid.src}" controls playsinline></video>`;
+
+        const commentsHtml = vid.comments
+          .map(c => `<div class="comment-item">💬 ${c}</div>`)
+          .join("");
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="title">${vid.title}</div>
+          ${mediaHtml}
+          <div class="actions">
+            <button class="${vid.liked ? "liked" : ""}" onclick="toggleLike(${index})">
+              ${vid.liked ? "❤️" : "🤍"} لایک (${vid.likes})
+            </button>
+            <button onclick="focusComment(${index})">
+              💬 کامنت (${vid.comments.length})
+            </button>
+            <button onclick="shareVideo(${index})">
+              📤 ارسال به دوست
+            </button>
+          </div>
+          <div class="comments-box">
+            <div id="comments-${index}">${commentsHtml}</div>
+            <div class="comment-form">
+              <input id="input-${index}" type="text" placeholder="کامنت خودت رو بنویس..." />
+              <button class="send-btn" onclick="addComment(${index})">ارسال</button>
+            </div>
+          </div>
+        `;
+        feedEl.appendChild(card);
+      });
+    }
+
+    function toggleLike(index) {
+      const vid = videos[index];
+      vid.liked = !vid.liked;
+      vid.likes += vid.liked ? 1 : -1;
+      renderFeed();
+    }
+
+    function focusComment(index) {
+      const inp = document.getElementById(`input-${index}`);
+      if (inp) inp.focus();
+    }
+
+    function addComment(index) {
+      const inp = document.getElementById(`input-${index}`);
+      const text = inp.value.trim();
+      if (!text) return;
+      const userName = tg.initDataUnsafe?.user?.first_name || "کاربر";
+      videos[index].comments.push(`${userName}: ${text}`);
+      renderFeed();
+    }
+
+    function shareVideo(index) {
+      const vid = videos[index];
+      const shareText = encodeURIComponent(`این کلیپ رو ببین: ${vid.title}`);
+      const appUrl = encodeURIComponent(window.location.href);
+      const tgShareUrl = `https://t.me/share/url?url=${appUrl}&text=${shareText}`;
+      tg.openTelegramLink(tgShareUrl);
+    }
+
+    renderFeed();
+  </script>
+</body>
+</html>
